@@ -11,17 +11,45 @@ import javax.swing.JButton;
 import javax.swing.JDialog; 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
 
+import aula20201109.Job;
+import aula20201109.AppProducerConsumer.JobProgressPanel;
+
 
 public class App extends JDialog {
+	private JPanel panel = new JPanel();
     private JobQueue jobs = new JobQueue();
     private List<JobConsumer> consumers = new ArrayList<>();
     private List<JobProducer> producers = new ArrayList<>();
 
+    
+    protected void createNewJob(int size) {
+        Job newJob = new Job(size);
+        JobProgressPanel jobProgressPanel = new JobProgressPanel(newJob);
+        this.panel.add(jobProgressPanel);
+        this.panel.revalidate();
+        this.revalidate();
+    }
+    
+    private static class JobProgressPanel extends JPanel {
+        private Job job;
+        private int wordDone = 0;
+        private JProgressBar progressBar;
 
+        public JobProgressPanel(Job job) {
+            this.progressBar = new JProgressBar(job.getSize());
+            this.job = job;
+            BoxLayout boxLayout = new BoxLayout(this, BoxLayout.LINE_AXIS);
+            this.setLayout(boxLayout);
+            this.add(progressBar);
+        }
+    }
+    
+    
     public static void main(String[] args) {        
         App app = new App();
         app.setSize(400,250);
@@ -40,7 +68,7 @@ public class App extends JDialog {
 
 
     private JPanel createPanel() {
-        final JPanel panel = new JPanel();
+        //final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createRaisedBevelBorder());
 
@@ -95,7 +123,9 @@ public class App extends JDialog {
 
         //Registrando o listener de nosso padrão Observer para atualizar a UI quando o tamanho da 
         //fila de jobs mudar (tanto para mais quanto para menos).
+        
         this.jobs.addJobQueueListener(jobCount -> {
+           createNewJob(jobCount);
            fieldJobCount.setText(String.valueOf(jobCount)); 
         });
 

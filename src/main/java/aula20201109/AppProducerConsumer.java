@@ -30,7 +30,7 @@ public class AppProducerConsumer extends JDialog {
         app.setVisible(true);
     }
 
-    private static class JobProgressPanel extends JPanel {
+    public static class JobProgressPanel extends JPanel {
         private Job job;
         private int wordDone = 0;
         private JProgressBar progressBar;
